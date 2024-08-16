@@ -6,10 +6,13 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
     private UserService userService;
+    private User mockUser;
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -25,6 +28,7 @@ public class UserServiceTest {
     public void setUp() {
         // Executed before each test
         userService = new UserService();
+        mockUser = Mockito.mock(User.class);
     }
 
     @After
@@ -34,49 +38,55 @@ public class UserServiceTest {
 
     @Test
     public void testRegisterUser_Positive() {
-        User user = new User("uniqueUser", "password123", "email@example.com");
-        assertTrue(userService.registerUser(user));
+        when(mockUser.getUsername()).thenReturn("uniqueUser");
+        when(mockUser.getPassword()).thenReturn("password123");
+        when(mockUser.getEmail()).thenReturn("email@example.com");
+
+        assertTrue(userService.registerUser(mockUser));
     }
 
     @Test
     public void testRegisterUser_Negative() {
-        User user = new User("existingUser", "password123", "email@example.com");
-        userService.registerUser(user);  // First registration should succeed
-        assertFalse(userService.registerUser(user));  // Second registration with the same username should fail
+        when(mockUser.getUsername()).thenReturn("existingUser");
+
+        userService.registerUser(mockUser);  // First registration should succeed
+        assertFalse(userService.registerUser(mockUser));  // Second registration with the same username should fail
     }
 
     @Test
     public void testRegisterUser_EdgeCase() {
-        User user = new User("", "password123", "email@example.com"); // Empty username
-        boolean result = userService.registerUser(user);
-        System.out.println("Register with empty username result: " + result);
-        assertFalse(result); // Expecting false, registration should fail
+        when(mockUser.getUsername()).thenReturn(""); // Empty username
+        assertFalse(userService.registerUser(mockUser));
 
-        user = new User(null, "password123", "email@example.com"); // Null username
-        result = userService.registerUser(user);
-        System.out.println("Register with null username result: " + result);
-        assertFalse(result); // Expecting false, registration should fail
+        when(mockUser.getUsername()).thenReturn(null); // Null username
+        assertFalse(userService.registerUser(mockUser));
     }
 
     @Test
     public void testLoginUser_Positive() {
-        User user = new User("validUser", "password123", "email@example.com");
-        userService.registerUser(user);
+        when(mockUser.getUsername()).thenReturn("validUser");
+        when(mockUser.getPassword()).thenReturn("password123");
+
+        userService.registerUser(mockUser);
         assertNotNull(userService.loginUser("validUser", "password123"));
     }
 
     @Test
     public void testLoginUser_Negative() {
-        User user = new User("validUser", "password123", "email@example.com");
-        userService.registerUser(user);
+        when(mockUser.getUsername()).thenReturn("validUser");
+        when(mockUser.getPassword()).thenReturn("password123");
+
+        userService.registerUser(mockUser);
         assertNull(userService.loginUser("validUser", "wrongPassword"));  // Wrong password
         assertNull(userService.loginUser("invalidUser", "password123"));  // Non-existing user
     }
 
     @Test
     public void testLoginUser_EdgeCase() {
-        User user = new User("validUser", "password123", "email@example.com");
-        userService.registerUser(user);
+        when(mockUser.getUsername()).thenReturn("validUser");
+        when(mockUser.getPassword()).thenReturn("password123");
+
+        userService.registerUser(mockUser);
         assertNull(userService.loginUser("", "password123"));  // Empty username
         assertNull(userService.loginUser("validUser", ""));    // Empty password
         assertNull(userService.loginUser(null, null));          // Null values
@@ -84,33 +94,39 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUserProfile_Positive() {
-        User user = new User("userToUpdate", "password123", "email@example.com");
-        userService.registerUser(user);
-        assertTrue(userService.updateUserProfile(user, "newUsername", "newPassword", "newEmail@example.com"));
+        when(mockUser.getUsername()).thenReturn("userToUpdate");
+        when(mockUser.getPassword()).thenReturn("password123");
+        when(mockUser.getEmail()).thenReturn("email@example.com");
+
+        userService.registerUser(mockUser);
+
+        when(mockUser.getUsername()).thenReturn("newUsername");
+        when(mockUser.getPassword()).thenReturn("newPassword");
+        when(mockUser.getEmail()).thenReturn("newEmail@example.com");
+
+        assertTrue(userService.updateUserProfile(mockUser, "newUsername", "newPassword", "newEmail@example.com"));
     }
 
     @Test
     public void testUpdateUserProfile_Negative() {
-        User user = new User("userToUpdate", "password123", "email@example.com");
-        userService.registerUser(user);
-        User anotherUser = new User("existingUser", "password123", "email@example.com");
+        when(mockUser.getUsername()).thenReturn("userToUpdate");
+
+        userService.registerUser(mockUser);
+
+        User anotherUser = Mockito.mock(User.class);
+        when(anotherUser.getUsername()).thenReturn("existingUser");
+
         userService.registerUser(anotherUser);
 
-        assertFalse(userService.updateUserProfile(user, "existingUser", "newPassword", "newEmail@example.com")); // Username already taken
+        assertFalse(userService.updateUserProfile(mockUser, "existingUser", "newPassword", "newEmail@example.com")); // Username already taken
     }
 
     @Test
     public void testUpdateUserProfile_EdgeCase() {
-        User user = new User("userToUpdate", "password123", "email@example.com");
-        userService.registerUser(user);
+        when(mockUser.getUsername()).thenReturn("userToUpdate");
 
-        boolean result = userService.updateUserProfile(user, "", "", "");
-        System.out.println("Update with empty values result: " + result);
-        assertFalse(result); // Expecting false, profile should not be updated
-
-        result = userService.updateUserProfile(user, null, null, null);
-        System.out.println("Update with null values result: " + result);
-        assertFalse(result); // Expecting false, profile should not be updated
+        userService.registerUser(mockUser);
+        assertFalse(userService.updateUserProfile(mockUser, "", "", "")); // Empty new username, password, and email
+        assertFalse(userService.updateUserProfile(mockUser, null, null, null)); // Null new username, password, and email
     }
-
 }
