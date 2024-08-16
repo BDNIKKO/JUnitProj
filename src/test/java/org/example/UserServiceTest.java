@@ -1,3 +1,4 @@
+package org.example;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -5,31 +6,29 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
     private UserService userService;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
         // Executed once, before the start of all tests
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
         // Executed once, after all tests are finished
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Executed before each test
         userService = new UserService();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Executed after each test
     }
 
@@ -49,10 +48,14 @@ public class UserServiceTest {
     @Test
     public void testRegisterUser_EdgeCase() {
         User user = new User("", "password123", "email@example.com"); // Empty username
-        assertFalse(userService.registerUser(user));
+        boolean result = userService.registerUser(user);
+        System.out.println("Register with empty username result: " + result);
+        assertFalse(result); // Expecting false, registration should fail
 
         user = new User(null, "password123", "email@example.com"); // Null username
-        assertFalse(userService.registerUser(user));
+        result = userService.registerUser(user);
+        System.out.println("Register with null username result: " + result);
+        assertFalse(result); // Expecting false, registration should fail
     }
 
     @Test
@@ -100,7 +103,14 @@ public class UserServiceTest {
     public void testUpdateUserProfile_EdgeCase() {
         User user = new User("userToUpdate", "password123", "email@example.com");
         userService.registerUser(user);
-        assertFalse(userService.updateUserProfile(user, "", "", "")); // Empty new username, password, and email
-        assertFalse(userService.updateUserProfile(user, null, null, null)); // Null new username, password, and email
+
+        boolean result = userService.updateUserProfile(user, "", "", "");
+        System.out.println("Update with empty values result: " + result);
+        assertFalse(result); // Expecting false, profile should not be updated
+
+        result = userService.updateUserProfile(user, null, null, null);
+        System.out.println("Update with null values result: " + result);
+        assertFalse(result); // Expecting false, profile should not be updated
     }
+
 }

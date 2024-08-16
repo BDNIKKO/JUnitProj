@@ -8,10 +8,12 @@ public class UserService {
     private Map<String, User> userDatabase = new HashMap<>();
 
     public boolean registerUser(User user) {
+        if (user == null || user.getUsername() == null || user.getUsername().isEmpty()) {
+            return false; // Invalid user data
+        }
         if (userDatabase.containsKey(user.getUsername())) {
             return false; // User already exists
         }
-
         userDatabase.put(user.getUsername(), user);
         return true; // User registered successfully
     }
@@ -31,8 +33,12 @@ public class UserService {
     }
 
     public boolean updateUserProfile(User user, String newUsername, String newPassword, String newEmail) {
-        // logic to update user profile
-        if (userDatabase.containsKey(newUsername)) {
+        if (user == null || newUsername == null || newUsername.isEmpty() ||
+                newPassword == null || newPassword.isEmpty() ||
+                newEmail == null || newEmail.isEmpty()) {
+            return false; // Invalid update data
+        }
+        if (userDatabase.containsKey(newUsername) && !user.getUsername().equals(newUsername)) {
             return false; // New username is already taken
         }
 
@@ -43,5 +49,4 @@ public class UserService {
         userDatabase.put(newUsername, user);
         return true; // User profile updated successfully
     }
-
 }

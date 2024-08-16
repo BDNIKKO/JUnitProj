@@ -33,8 +33,8 @@ public class BookService {
     }
 
     public boolean addBook(Book book) {
-        if (bookDatabase.contains(book)) {
-            return false; // Book is already in the database
+        if (book == null || bookDatabase.contains(book)) {
+            return false; // Book is null or already in the database
         }
 
         bookDatabase.add(book);
@@ -42,6 +42,9 @@ public class BookService {
     }
 
     public boolean removeBook(Book book) {
+        if (book == null) {
+            return false; // Cannot remove a null book
+        }
         return bookDatabase.remove(book); // Book removed successfully if it was in the database
     }
 }

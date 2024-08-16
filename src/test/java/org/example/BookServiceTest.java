@@ -1,3 +1,4 @@
+package org.example;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,17 +17,17 @@ public class BookServiceTest {
     private Book mockBook;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
         // Executed once, before the start of all tests
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
         // Executed once, after all tests are finished
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Executed before each test
         bookService = new BookService();
         mockUser = Mockito.mock(User.class);
@@ -34,13 +35,13 @@ public class BookServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Executed after each test
     }
 
     @Test
     public void testSearchBook_Positive() {
-        Book book = new Book("Title", "Author", "Genre");
+        Book book = new Book("Title", "Author", "Genre", 9.99);
         bookService.addBook(book);
         List<Book> foundBooks = bookService.searchBook("Title");
         assertEquals(1, foundBooks.size());
